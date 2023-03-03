@@ -20,6 +20,7 @@ const OBSTACLE_SPAWN = Mat4.translation(20, 0, 0);
 const red = hex_color("#FF0000");
 const light_green = hex_color("#90EE90");
 const light_blue = hex_color("#87C1FF");
+const turquoise = hex_color("#30D5C8");
 
 //returns a 4x4 matrix whose first column is a vec4
 const vec4_to_matrix = vector => {
@@ -90,7 +91,7 @@ export class HoneyCollector extends Scene {
 
         this.materials = {
             floor: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 1, color: hex_color("#30D5C8")}),
+                {ambient: 1, diffusivity: 1, color: turquoise}),
             cube: new Material(new defs.Phong_Shader(),
                 {ambient: 0, diffusivity: 1, color: light_green}),
             obstacle: new Material(new defs.Phong_Shader(),
@@ -120,7 +121,6 @@ export class HoneyCollector extends Scene {
         };
         
         this.airborne = true;
-        this.jump = false;
 
         this.playing = true;
         this.time = 0;
@@ -132,7 +132,7 @@ export class HoneyCollector extends Scene {
         this.key_triggered_button("Jump", ["v"], () => {
             //jump only when airborne
             if (this.playing && !this.airborne){
-                this.jump = true;
+                this.cube.velocity.y += JUMP_VELOCITY;
             }
         });
         this.key_triggered_button("Restart", ["x"], () => {
@@ -183,12 +183,6 @@ export class HoneyCollector extends Scene {
                 this.model_transforms.cube = this.model_transforms.cube.times(Mat4.translation(0, y_up, 0));
                 this.cube.velocity.y = 0;
                 this.airborne = false;
-            }
-
-            //handle jump
-            if (this.jump) {
-                this.cube.velocity.y += JUMP_VELOCITY;
-                this.jump = false;
             }
 
             //end game after collision with obstacle
