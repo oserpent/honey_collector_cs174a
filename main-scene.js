@@ -8,7 +8,6 @@ import {Surfaces_Demo} from "./examples/surfaces-demo.js"
 import {Text_Demo} from "./examples/text-demo.js"
 import {Transforms_Sandbox} from "./examples/transforms-sandbox.js"
 import {HoneyCollector} from "./honey_collector.js";
-
 // Pull these names into this module's scope for convenience:
 const {
     Vector, Vector3, vec, vec3, vec4, color, Matrix, Mat4, Light, Shape, Material, Shader, Texture, Scene,
