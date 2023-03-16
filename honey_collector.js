@@ -405,4 +405,3 @@ class Texture_Rotate extends Textured_Phong {
         } `;
     }
 }
-
