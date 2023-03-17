@@ -66,7 +66,7 @@ const HONEY_DROP_AABB_SPAWN = Mat4.translation(25, -2.4, 0).times(Mat4.scale(HON
 const HONEY_DROP_SPAWN = {x: 25, y: -3, z: 0};
 
 //COLORS
-const light_green = hex_color("#90EE90");
+const fuchsia = hex_color("#FF00FF");
 const grass_green = hex_color("#7CFC00");
 
 //GLOBAL VARS
@@ -98,7 +98,7 @@ export class HoneyCollector extends Scene {
                 texture: new Texture("assets/pot_starry_background.jpg","LINEAR_MIPMAP_LINEAR")
             }),
             number_display: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 0, color: light_green}),
+                {ambient: 1, diffusivity: 0, color: fuchsia}),
         }
 
         this.white = new Material(new defs.Basic_Shader());
@@ -116,7 +116,6 @@ export class HoneyCollector extends Scene {
                 x: 0,
                 y: 0
             },
-            color: light_green
         };
 
         this.obstacle_aabb = {
@@ -205,7 +204,7 @@ export class HoneyCollector extends Scene {
     make_control_panel() {
         this.key_triggered_button("Jump", ["v"], () => {
             //jump only when not airborne
-            if (this.playing && !this.airborne){
+            if (this.playing && !this.duck && !this.airborne){
                 this.bear_aabb.velocity.y += JUMP_VELOCITY;
             }
         });
@@ -239,7 +238,6 @@ export class HoneyCollector extends Scene {
             this.setUpRandomObstacle();
             this.setUpHoney(true);
 
-            this.bear_aabb.color = light_green;
             this.bear_aabb.velocity.y = 0;
             this.score = 0;
         });
@@ -278,7 +276,7 @@ export class HoneyCollector extends Scene {
 
         if(this.playing){
             const speedup_temp = game_time / 50;
-            if (speedup <= 1) {
+            if (speedup_temp <= 2) {
                 speedup = 1 + speedup_temp;
             }
 
