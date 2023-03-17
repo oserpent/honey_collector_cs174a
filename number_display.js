@@ -1,8 +1,6 @@
 import {defs, tiny} from "./examples/common.js";
 
-const {
-    hex_color, Mat4, Material,
-} = tiny;
+const {Mat4} = tiny;
 
 class SevenSegmentDisplay {
     // translation_coordinates is an object of form { x: x_coord, y: y_coord, z: z_coord }
@@ -26,13 +24,13 @@ class SevenSegmentDisplay {
         this.model_transforms = () => {
             return {
                 //segment height = 1 before scaling_factor is applied
-                A: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0,2 - segment_width,0)).times(Mat4.scale(1, segment_width, segment_width)),
-                B: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(1 - this.segment_width,2 - 1, 0)).times(Mat4.scale(segment_width, 1, segment_width)),
-                C: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(1 - this.segment_width,1 - 2, 0)).times(Mat4.scale(segment_width, 1, segment_width)),
-                D: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0,segment_width - 2,0)).times(Mat4.scale(1, segment_width, segment_width)),
-                E: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(this.segment_width - 1,1 - 2, 0)).times(Mat4.scale(segment_width, 1, segment_width)),
-                F: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(this.segment_width - 1,2 - 1, 0)).times(Mat4.scale(segment_width, 1, segment_width)),
-                G: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0, 0, 0)).times(Mat4.scale(1, segment_width, segment_width))
+                A: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0,2 - segment_width,0)).times(Mat4.scale(1, segment_width, 0.1)),
+                B: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(1 - this.segment_width,2 - 1, 0)).times(Mat4.scale(segment_width, 1, 0.1)),
+                C: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(1 - this.segment_width,1 - 2, 0)).times(Mat4.scale(segment_width, 1, 0.1)),
+                D: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0,segment_width - 2,0)).times(Mat4.scale(1, segment_width, 0.1)),
+                E: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(this.segment_width - 1,1 - 2, 0)).times(Mat4.scale(segment_width, 1, 0.1)),
+                F: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(this.segment_width - 1,2 - 1, 0)).times(Mat4.scale(segment_width, 1, 0.1)),
+                G: Mat4.translation(this.x, this.y, this.z).times(Mat4.scale(this.scaling_factor, scaling_factor, scaling_factor)).times(Mat4.translation(0, 0, 0)).times(Mat4.scale(1, segment_width, 0.1))
             }
         }
     }
