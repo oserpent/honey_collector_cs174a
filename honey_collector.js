@@ -78,6 +78,7 @@ export class HoneyCollector extends Scene {
     constructor() {
         super();
 
+        
         this.shapes = {
             bear_aabb: new Cube_Outline(),
             floor: new Square(),
@@ -85,10 +86,11 @@ export class HoneyCollector extends Scene {
             background: new Square(),
             honey_drop_aabb: new Cube_Outline(),
         }
+        const bump = new defs.Fake_Bump_Map(1);
 
         this.materials = {
-            floor: new Material(new defs.Phong_Shader(),
-            {ambient: 0.5, diffusivity: 1, color: grass_green}),
+            floor: new Material(new defs.Textured_Phong(),
+            {ambient: 0.5, diffusivity: 1, texture: new Texture("assets/grass.jpeg")}),
             //loading square images of my choice
             //opaque black has hex color #000000
             //set ambient to 1 to be able to see it
@@ -99,6 +101,8 @@ export class HoneyCollector extends Scene {
             }),
             number_display: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 0, color: fuchsia}),
+            bear: new Material(bump,
+                {ambient: 1, diffusivity: 0, texture: new Texture("assets/WoodLog.png")}),
         }
 
         this.white = new Material(new defs.Basic_Shader());
@@ -365,9 +369,13 @@ class Texture_Scroll_X extends Textured_Phong {
                 vec4 interpolated_f_tex_coord = f_tex_coord_new + vec4(1., 1., 0., 1.);
                 interpolated_f_tex_coord = scroll_mat * interpolated_f_tex_coord;
                 vec4 tex_color = texture2D( texture, interpolated_f_tex_coord.xy);
-                if( tex_color.w < .01 ) discard;                                                       
+                if( tex_color.w < .01 ) discard;
+                // Slightly disturb normals based on sampling the same image that was used for texturing:
+                vec3 bumped_N  = N + tex_color.rgb - .5*vec3(1,1,1);
+                // Compute an initial (ambient) color:
                 gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
-                gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
+                // Compute the final color with contributions from lights:
+                gl_FragColor.xyz += phong_model_lights( normalize( bumped_N ), vertex_worldspace );
         } `;
     }
 
@@ -380,3 +388,28 @@ class Texture_Scroll_X extends Textured_Phong {
         }
     }
 }
+
+
+const Fake_Bump_Map = defs.Fake_Bump_Map =
+    class Fake_Bump_Map extends Textured_Phong {
+        // **Fake_Bump_Map** Same as Phong_Shader, except adds a line of code to
+        // compute a new normal vector, perturbed according to texture color.
+        fragment_glsl_code() {
+            // ********* FRAGMENT SHADER *********
+            return this.shared_glsl_code() + `
+                varying vec2 f_tex_coord;
+                uniform sampler2D texture;
+        
+                void main(){
+                    // Sample the texture image in the correct place:
+                    vec4 tex_color = texture2D( texture, f_tex_coord );
+                    if( tex_color.w < .01 ) discard;
+                    // Slightly disturb normals based on sampling the same image that was used for texturing:
+                    vec3 bumped_N  = N + tex_color.rgb - .5*vec3(1,1,1);
+                    // Compute an initial (ambient) color:
+                    gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                    // Compute the final color with contributions from lights:
+                    gl_FragColor.xyz += phong_model_lights( normalize( bumped_N ), vertex_worldspace );
+                  } `;
+        }
+    }

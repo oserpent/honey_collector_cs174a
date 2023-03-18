@@ -10,14 +10,15 @@ export class Pond {
         this.x = translation_coordinates.x;
         this.y = translation_coordinates.y;
         this.z = translation_coordinates.z;
-
+        const bump = new defs.Fake_Bump_Map(1);
+        
         this.shapes = {
             pond: new defs.Subdivision_Sphere(4),
             pond2: new defs.Subdivision_Sphere(4),
         }
 
         this.materials = {
-            pond: new Material(new Textured_Phong(), {
+            pond: new Material(bump, {
                 color: hex_color("#5fd2b1"), ambient: 1, diffusivity: 0,texture: new Texture("assets/pond.png")
             }),
         }
