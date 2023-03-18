@@ -69,13 +69,13 @@ export class Bear {
 
         let ear1_transform = Mat4.translation(this.x,this.y,this.z).times(Mat4.translation(0, 3, 0.5)).times(Mat4.scale(0.1,0.4,0.4));
         if (this.duck) {
-            ear1_transform = Mat4.translation(this.x, this.y, this.z).times(Mat4.translation(0,1,0.5)).times(Mat4.rotation(-Math.PI/2, 0, 0, 1)).times(Mat4.translation(0,2,0)).times(Mat4.scale(0.1,0.4,0.4));
+            ear1_transform = Mat4.translation(this.x, this.y, this.z).times(Mat4.translation(1, -1.25, 0)).times(Mat4.translation(0,1,0.5)).times(Mat4.translation(0,2,0)).times(Mat4.scale(0.1,0.4,0.4));
         }
         this.shapes.ear1.draw(context, program_state, ear1_transform, this.materials.fur);
 
         let ear2_transform = Mat4.translation(this.x,this.y,this.z).times(Mat4.translation(0, 3, -0.5)).times(Mat4.scale(0.1,0.4,0.4));
         if (this.duck) {
-            ear2_transform = Mat4.translation(this.x, this.y, this.z).times(Mat4.translation(0,1,-0.5)).times(Mat4.rotation(-Math.PI/2, 0, 0, 1)).times(Mat4.translation(0,2,0)).times(Mat4.scale(0.1,0.4,0.4));
+            ear2_transform = Mat4.translation(this.x, this.y, this.z).times(Mat4.translation(1, -1.25, 0)).times(Mat4.translation(0,1,-0.5)).times(Mat4.translation(0,2,0)).times(Mat4.scale(0.1,0.4,0.4));
         }
         this.shapes.ear2.draw(context, program_state, ear2_transform, this.materials.fur);
 
@@ -104,41 +104,18 @@ export class Bear {
 const Move_Texture = defs.Move_Texture = class Move_Texture extends Textured_Phong {
     fragment_glsl_code() {
         return this.shared_glsl_code() + `
-            varying vec2 f_tex_coord;
-            uniform sampler2D texture;
-            uniform float game_time;
-            
-            void main(){
-                float pi = 3.14159265359;
-                float angle_of_rotation_scaled =pi/2.0;
-                float angle_of_rotation_2 = -pi/11.0;
-                float angle_of_rotation_3 = pi/5.5;
-                mat4 rotate_mat = mat4(vec4(cos(angle_of_rotation_scaled), sin(angle_of_rotation_scaled), 0., 0.), vec4(sin(angle_of_rotation_scaled), -cos(angle_of_rotation_scaled), 0., 0.), vec4(0., 0., 1., 0.), vec4(0., 0., 0., 1.));
-                mat4 rotate_mat_2 = mat4(vec4(cos(angle_of_rotation_2), sin(angle_of_rotation_2), 0., 0.), vec4(0., 1., 0., 0.), vec4(sin(angle_of_rotation_2), -cos(angle_of_rotation_2), 0., 0.), vec4(0., 0., 0., 1.));
-                mat4 rotate_mat_3 = mat4(vec4(1., 0., 0., 0.), vec4(cos(angle_of_rotation_3), sin(angle_of_rotation_3), 0., 0.), vec4(-sin(angle_of_rotation_3), cos(angle_of_rotation_3), 0., 0.), vec4(0., 0., 0., 1.));
-
-                vec2 f_tex_coord = (f_tex_coord *vec2(2.2, 2.2));
-                //now, we take our old f_tex_coord, convert it to a vec4
-                vec4 f_tex_coord_new = vec4(f_tex_coord, 0., 0.)+vec4(-1.0, 0.1, 0.1, 0.);
-
-                //we need to interpolate our f_tex_coordinates since f_tex_coord only gives pre-interpolated units
-                //we are going to be rotating around the center, but we need to first shift it -0.5 and then back 0.5 units after rotation.
-                vec4 interpolated_f_tex_coord = f_tex_coord_new;
-
-                interpolated_f_tex_coord = (rotate_mat * interpolated_f_tex_coord);
-                interpolated_f_tex_coord = (rotate_mat_2 * interpolated_f_tex_coord);
-                interpolated_f_tex_coord = (rotate_mat_3 * interpolated_f_tex_coord);
-                vec4 tex_color = texture2D( texture, interpolated_f_tex_coord.xy);
-
-                if( tex_color.w < .01 ) discard;
-                                                                         // Compute an initial (ambient) color:
-                gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
-                                                                         // Compute the final color with contributions from lights:
-                gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
-        } `;
+                const float M_1_PI = 1.0 / 3.1415926535897932384626433832795;
+                varying vec2 f_tex_coord;
+                uniform sampler2D texture;
+                void main(){
+                    vec3 n_normal = normalize(N);
+                    vec2 texture_coordinate;
+                    texture_coordinate.x = 0.5 - atan(n_normal.z, n_normal.x) * M_1_PI;
+                    texture_coordinate.y = 0.5 - asin(-n_normal.y) * M_1_PI;
+                    gl_FragColor = texture2D(texture, texture_coordinate);
+                    
+                  } `;
     }
-
-
 }
 const Fake_Bump_Map = defs.Fake_Bump_Map =
     class Fake_Bump_Map extends Textured_Phong {
