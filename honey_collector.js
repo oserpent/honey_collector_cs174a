@@ -67,7 +67,6 @@ const HONEY_DROP_SPAWN = {x: 25, y: -3, z: 0};
 
 //COLORS
 const fuchsia = hex_color("#FF00FF");
-const grass_green = hex_color("#7CFC00");
 
 //GLOBAL VARS
 let game_start = 0;
